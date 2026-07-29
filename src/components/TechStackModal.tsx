@@ -92,6 +92,9 @@ export function TechStackModal({ isOpen, onClose }: TechStackModalProps) {
             </h3>
             <ul className="space-y-2.5 pl-4 list-disc text-[#ab9f96] leading-relaxed">
               <li>
+                <strong className="text-[#f5f3f0]">Harness Engineering & Evals Engine:</strong> Verificação determinística de citação literal (<code className="text-[#ff4d00] bg-[#1c1a18] border border-[#2e2a27] px-1.5 py-0.5 rounded font-mono text-xs">quote-verifier.ts</code>), suíte de avaliação de qualidade (0-100 pts) e detecção de ambiguidade nos critérios de aceite.
+              </li>
+              <li>
                 <strong className="text-[#f5f3f0]">Redirecionamento Automático:</strong> Se o OpenRouter falhar (sem chave ou erro de cota), o sistema aciona transparentemente o Gemini Direto.
               </li>
               <li>

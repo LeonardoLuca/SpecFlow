@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getGeminiClient, SYSTEM_INSTRUCTION, GEMINI_RESPONSE_SCHEMA } from "@/lib/gemini";
 import { callOpenRouterSpec } from "@/lib/openrouter";
 import { ProductSpecificationSchema, GenerateSpecResponse, ProviderOption } from "@/types/spec";
+import { evaluateSpecification } from "@/lib/harness/eval-suite";
 import fallbackSpecRaw from "@/data/fallback-spec.json";
 
 const TIMEOUT_MS = 20000; // 20 segundos
@@ -46,6 +47,8 @@ export async function POST(request: Request) {
       }
 
 
+      const evalResult = evaluateSpecification(zodResult.data, userInput);
+
       const durationMs = Date.now() - startTime;
       const liveResponse: GenerateSpecResponse = {
         source: "live",
@@ -55,6 +58,13 @@ export async function POST(request: Request) {
           model: openRouterResult.model,
           durationMs,
           generatedAt,
+          harness: {
+            evalScore: evalResult.score,
+            quoteExactnessRate: evalResult.metrics.quoteExactnessRate,
+            isPassing: evalResult.isPassing,
+            selfCorrectionAttempts: 0,
+            warnings: evalResult.warnings,
+          },
         },
       };
       return NextResponse.json(liveResponse);
@@ -64,6 +74,8 @@ export async function POST(request: Request) {
       console.warn(`[SpecFlow OpenRouter Activator] OpenRouter falhou: ${msg}. Carregando fallback estático direto...`);
 
       const parsedFallback = ProductSpecificationSchema.parse(fallbackSpecRaw);
+      const evalFallback = evaluateSpecification(parsedFallback, userInput);
+
       const fallbackResponse: GenerateSpecResponse = {
         source: "fallback",
         specification: parsedFallback,
@@ -71,6 +83,13 @@ export async function POST(request: Request) {
           provider: "OpenRouter (Free) / Cache Estático",
           generatedAt,
           fallbackReason: `OpenRouter: ${msg}`,
+          harness: {
+            evalScore: evalFallback.score,
+            quoteExactnessRate: evalFallback.metrics.quoteExactnessRate,
+            isPassing: evalFallback.isPassing,
+            selfCorrectionAttempts: 0,
+            warnings: evalFallback.warnings,
+          },
         },
       };
 
@@ -132,6 +151,7 @@ export async function POST(request: Request) {
       throw new Error("A resposta da IA não atendeu estritamente ao Schema Zod esperado.");
     }
 
+    const evalResult = evaluateSpecification(zodResult.data, userInput);
     const durationMs = Date.now() - startTime;
 
     const liveResponse: GenerateSpecResponse = {
@@ -142,6 +162,13 @@ export async function POST(request: Request) {
         model: successfulResult.usedModel,
         durationMs,
         generatedAt,
+        harness: {
+          evalScore: evalResult.score,
+          quoteExactnessRate: evalResult.metrics.quoteExactnessRate,
+          isPassing: evalResult.isPassing,
+          selfCorrectionAttempts: 0,
+          warnings: evalResult.warnings,
+        },
       },
     };
 
@@ -153,6 +180,7 @@ export async function POST(request: Request) {
 
     // Validação do Fallback estático contra Zod para garantir contrato idêntico
     const parsedFallback = ProductSpecificationSchema.parse(fallbackSpecRaw);
+    const evalFallback = evaluateSpecification(parsedFallback, userInput);
 
     const fallbackResponse: GenerateSpecResponse = {
       source: "fallback",
@@ -161,6 +189,13 @@ export async function POST(request: Request) {
         provider: "Google Gemini / Cache Estático",
         generatedAt,
         fallbackReason: errorMessage,
+        harness: {
+          evalScore: evalFallback.score,
+          quoteExactnessRate: evalFallback.metrics.quoteExactnessRate,
+          isPassing: evalFallback.isPassing,
+          selfCorrectionAttempts: 0,
+          warnings: evalFallback.warnings,
+        },
       },
     };
 

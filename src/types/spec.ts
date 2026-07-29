@@ -43,6 +43,13 @@ export interface GenerateSpecResponse {
     durationMs?: number;
     generatedAt: string;
     fallbackReason?: string;
+    harness?: {
+      evalScore: number;
+      quoteExactnessRate: number;
+      isPassing: boolean;
+      selfCorrectionAttempts: number;
+      warnings?: string[];
+    };
   };
 }
 

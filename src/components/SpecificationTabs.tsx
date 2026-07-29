@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { GenerateSpecResponse } from "@/types/spec";
 import { GenerationDetailsModal } from "./GenerationDetailsModal";
+import { HarnessEvalModal } from "./HarnessEvalModal";
 import { MarkdownViewer } from "./MarkdownViewer";
 
 interface SpecificationTabsProps {
@@ -32,7 +33,8 @@ interface SpecificationTabsProps {
 export function SpecificationTabs({ data }: SpecificationTabsProps) {
   const [activeTab, setActiveTab] = useState<"overview" | "stories" | "backlog" | "risks" | "markdown">("overview");
   const [copied, setCopied] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTechModalOpen, setIsTechModalOpen] = useState(false);
+  const [isEvalModalOpen, setIsEvalModalOpen] = useState(false);
 
   const { specification: spec, source, metadata } = data;
 
@@ -127,14 +129,16 @@ ${spec.duvidasEmAberto.map((d) => `- ${d}`).join("\n")}
       {/* Header do Card de Especificação */}
       <div className="bg-[#1c1a18]/90 border border-[#2e2a27] rounded-3xl p-6 sm:p-8 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4 relative overflow-hidden">
         <div className="space-y-2.5">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 flex-wrap">
+            {/* Modal 1: Provedor & Modelo (OpenRouter / Gemini / Cache) */}
             <span
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => setIsTechModalOpen(true)}
               className={`cursor-pointer text-xs font-semibold px-3 py-1 rounded-full border flex items-center gap-1.5 transition-all hover:scale-105 ${
                 source === "live"
                   ? "bg-emerald-950/80 text-emerald-300 border-emerald-800/80 shadow-sm"
                   : "bg-amber-950/80 text-amber-300 border-amber-800/80 shadow-sm"
               }`}
+              title="Clique para ver os detalhes técnicos do provedor e tempo de resposta"
             >
               {source === "live" ? (
                 <>
@@ -149,12 +153,26 @@ ${spec.duvidasEmAberto.map((d) => `- ${d}`).join("\n")}
               )}
             </span>
 
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="text-xs text-[#ab9f96] hover:text-[#f5f3f0] underline flex items-center gap-1 transition-colors"
+{/*             <button
+              onClick={() => setIsTechModalOpen(true)}
+              className="text-xs text-[#ab9f96] hover:text-[#f5f3f0] underline flex items-center gap-1 transition-colors mr-1"
             >
               <Info className="w-3.5 h-3.5" />
               <span>Detalhes da geração</span>
+            </button> */}
+
+            {/* Modal 2: Validação & Evals de Harness Engineering */}
+            <button
+              onClick={() => setIsEvalModalOpen(true)}
+              className={`cursor-pointer text-xs font-semibold px-3 py-1 rounded-full border flex items-center gap-1.5 transition-all hover:scale-105 ${
+                (metadata.harness?.evalScore ?? 100) >= 80
+                  ? "bg-[#ff4d00]/15 text-[#ff4d00] border-[#ff4d00]/40 shadow-sm hover:bg-[#ff4d00]/25"
+                  : "bg-amber-950/80 text-amber-300 border-amber-800/80 shadow-sm"
+              }`}
+              title="Clique para ver a análise de Evals, Grounding Check e Validação do Harness"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-[#ff4d00]" />
+              <span>Harness Evals: {metadata.harness?.evalScore ?? 100}/100</span>
             </button>
           </div>
 
@@ -442,10 +460,17 @@ ${spec.duvidasEmAberto.map((d) => `- ${d}`).join("\n")}
       </AnimatePresence>
 
       <GenerationDetailsModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isTechModalOpen}
+        onClose={() => setIsTechModalOpen(false)}
         metadata={metadata}
         source={source}
+      />
+
+      <HarnessEvalModal
+        isOpen={isEvalModalOpen}
+        onClose={() => setIsEvalModalOpen(false)}
+        harnessData={metadata.harness}
+        storiesCount={spec.historiasUsuario?.length || 0}
       />
     </motion.div>
   );

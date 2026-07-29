@@ -43,7 +43,12 @@ Interface escura no tom **Warm Graphite & Signal Orange** com efeito espacial re
 - Cabeçalho superior (`Header`) e barra lateral (`Sidebar`) imóveis e travados na janela (`h-screen sticky top-0`).
 - Rolagem contida exclusivamente na área de conteúdo principal (`<main> className="flex-1 overflow-y-auto"`).
 
-### 5. Sistema Defensivo com Multi-Level Fallback
+### 5. Camada de Harness Engineering & Evals Engine
+- **Auditoria de Grounding (`quote-verifier.ts`):** Validação determinística que garante que cada trecho literal de rastreabilidade citado nas User Stories realmente exista no texto de discovery.
+- **Suíte de Avaliação Contínua (`eval-suite.ts`):** Cálculo de nota final de qualidade (0 a 100 pts) ponderando grounding, completude de escopo e penalidade por termos ambíguos ("rápido", "fácil").
+- **Modal Dedicado de Evals (`HarnessEvalModal.tsx`):** Interface didática que explica o funcionamento do Harness, exibe barras de precisão e reporta recomendações de refinamento de produto.
+
+### 6. Sistema Defensivo com Multi-Level Fallback
 Para garantir disponibilidade ininterrupta durante falhas de rede, excedente de cota da API ou ausência de chave:
 1. **Redirecionamento Automático:** Se a chamada via OpenRouter falhar ou não possuir chave, o servidor tenta transparentemente o Gemini Direto.
 2. **Timeout Controller (20s):** Cancela requisições pendentes via `Promise.race()`.
@@ -61,6 +66,7 @@ Para garantir disponibilidade ininterrupta durante falhas de rede, excedente de 
 | **Estilização** | Tailwind CSS v4 & Lucide Icons | Design System dark mode no tom Warm Graphite & Signal Orange |
 | **Animações** | Framer Motion | Malha topográfica a 60fps via `useMotionTemplate` |
 | **IA / LLM** | Google Gen AI & OpenRouter API | Chamadas assíncronas ao Gemini 3.6 Flash e modelos grátis OpenRouter |
+| **Harness Engine** | TypeScript & Evals | Verificador de Grounding e Suíte de Avaliação de Qualidade |
 | **Validação** | Zod | Runtime schema validation no servidor |
 | **Markdown** | ReactMarkdown & Remark-GFM | Compilação e renderização de tabelas e sintaxe GFM |
 
@@ -103,7 +109,7 @@ Acessee a aplicação em `http://localhost:3000`.
 SpecFlow/
 ├── src/
 │   ├── app/
-│   │   ├── api/generate-spec/   # Route Handler POST com Gemini, OpenRouter & Zod
+│   │   ├── api/generate-spec/   # Route Handler POST com Gemini, OpenRouter, Zod & Harness
 │   │   ├── globals.css          # Tokens do Design System Warm Graphite
 │   │   └── page.tsx             # Aplicação principal (App Shell Fixo)
 │   ├── components/
@@ -112,7 +118,9 @@ SpecFlow/
 │   │   ├── DiscoveryForm.tsx    # Formulário com seletor de Provedor e CTA
 │   │   ├── GenerationStepsLoader.tsx # Loader em 5 etapas com pipeline de pensamento
 │   │   ├── InteractiveBackground.tsx # Fundo de elevação topográfica 3D a 60fps
-│   │   ├── SpecificationTabs.tsx# Visualizador em 5 abas da especificação
+│   │   ├── SpecificationTabs.tsx# Visualizador em 5 abas com acionadores de Evals
+│   │   ├── HarnessEvalModal.tsx # [NEW] Modal dedicado de Harness Evals & Grounding Check
+│   │   ├── GenerationDetailsModal.tsx # Modal de detalhes técnicos da geração IA
 │   │   ├── MarkdownViewer.tsx   # Renderizador compilado de Markdown
 │   │   ├── TechStackModal.tsx   # Modal de Arquitetura Técnica em grid 2x2
 │   │   └── LoginPage.tsx        # Tela de acesso split-screen com cards interativos
@@ -120,10 +128,13 @@ SpecFlow/
 │   │   ├── discovery-presets.ts # Modelos pré-configurados de discovery
 │   │   └── fallback-spec.json   # Especificação estática para fallback
 │   ├── lib/
+│   │   ├── harness/             # [NEW] Módulos de Harness Engineering & Evals
+│   │   │   ├── quote-verifier.ts# Verificador determinístico de citação literal
+│   │   │   └── eval-suite.ts    # Suíte de avaliação de qualidade (0-100 pts)
 │   │   ├── gemini.ts            # Cliente GoogleGenAI e System Prompt
 │   │   └── openrouter.ts        # Cliente OpenRouter REST API (Modelos Free)
 │   └── types/
-│       └── spec.ts              # Schemas Zod e interfaces TypeScript
+│       └── spec.ts              # Schemas Zod, Harness interfaces e tipos TS
 ├── vercel.json                  # Configuração de build para Vercel
 ```
 
