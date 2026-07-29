@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Workflow, ShieldCheck, ArrowRight, Lock, Mail, Github, LogIn, Cpu, Zap } from "lucide-react";
+import { Workflow, ArrowRight, Lock, Mail, Github, LogIn, Cpu, Zap } from "lucide-react";
 import { ProductShowcaseCards } from "./ProductShowcaseCards";
 import { InteractiveBackground } from "./InteractiveBackground";
 
@@ -42,7 +42,19 @@ export function LoginPage({ onLogin }: LoginPageProps) {
     <div className="min-h-screen w-full flex bg-[#131211] text-[#f5f3f0] font-sans relative overflow-hidden">
       <InteractiveBackground />
 
-      {/* Lado Esquerdo - Showcase de Produto Interativo (Estudo de Caso Volund) */}
+      {/* Ícone discreto do GitHub no canto superior direito para acesso direto ao repositório */}
+      <a
+        href="https://github.com/LeonardoLuca/SpecFlow"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="absolute top-5 right-5 z-30 p-2.5 rounded-xl bg-[#1c1a18]/80 hover:bg-[#262320] border border-[#2e2a27] text-[#ab9f96] hover:text-white transition-all flex items-center gap-2 text-xs backdrop-blur-md shadow-sm group"
+        title="Ver Repositório no GitHub"
+      >
+        <Github className="w-4 h-4 group-hover:scale-110 text-[#f5f3f0] transition-transform" />
+        <span className="hidden sm:inline font-mono text-[11px]">GitHub</span>
+      </a>
+
+      {/* Lado Esquerdo - Showcase de Produto Interativo */}
       <div className="hidden lg:flex lg:w-1/2 relative z-10 flex-col justify-between p-10 xl:p-12 overflow-y-auto border-r border-[#2e2a27] bg-[#131211]/30 backdrop-blur-[2px]">
         {/* Top Branding Header */}
         <div className="relative z-10 flex items-center justify-between">
@@ -79,9 +91,6 @@ export function LoginPage({ onLogin }: LoginPageProps) {
 
       {/* Lado Direito - Form de Login */}
       <div className="w-full lg:w-1/2 relative z-10 flex items-center justify-center p-6 sm:p-12 bg-[#131211]/20 backdrop-blur-[2px]">
-
-
-
         <motion.div
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -194,19 +203,18 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               <span>Google</span>
             </button>
 
-            <button
-              type="button"
-              onClick={handleGuestLogin}
+            <a
+              href="https://github.com/LeonardoLuca/SpecFlow"
+              target="_blank"
+              rel="noopener noreferrer"
               className="py-2.5 px-3 rounded-xl bg-[#131211] hover:bg-[#262320] border border-[#2e2a27] text-[#f5f3f0] text-xs font-medium transition-colors flex items-center justify-center gap-2 shadow-sm"
             >
               <Github className="w-4 h-4 text-[#f5f3f0]" />
               <span>GitHub</span>
-            </button>
+            </a>
           </div>
         </motion.div>
       </div>
     </div>
   );
 }
-
-
