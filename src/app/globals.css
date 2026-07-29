@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Hallmark · genre: editorial-minimal · theme: Warm Graphite / Signal Orange · design-system: design.md */
+:root {
+  --color-paper: oklch(0.14 0.010 60);
+  --color-paper-2: oklch(0.18 0.012 60);
+  --color-paper-3: oklch(0.23 0.015 60);
+  --color-ink: oklch(0.95 0.008 75);
+  --color-ink-2: oklch(0.70 0.010 70);
+  --color-ink-3: oklch(0.48 0.010 60);
+  --color-rule: oklch(0.26 0.012 60);
+  --color-rule-light: oklch(0.35 0.015 60);
+  --color-accent: oklch(0.64 0.220 40);
+  --color-accent-ink: oklch(0.98 0.005 75);
+  --color-emerald: oklch(0.70 0.120 150);
+  --color-amber: oklch(0.75 0.120 75);
+  --color-rose: oklch(0.65 0.150 25);
+  --color-focus: oklch(0.64 0.220 40);
+}
+
+body {
+  color: var(--color-ink);
+  background-color: #131211;
+  font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+::selection {
+  background-color: rgba(255, 77, 0, 0.22);
+  color: #ff8c52;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #131211;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2e2a27;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #443f3b;
+}
+
+/* Hallmark Editorial-Minimal Utilities */
+.glass-panel {
+  background: rgba(28, 26, 24, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(46, 42, 39, 0.8);
+}
+
+.glass-panel-hover {
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel-hover:hover {
+  border-color: rgba(255, 77, 0, 0.4);
+}
+
+

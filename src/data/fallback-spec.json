@@ -1,0 +1,85 @@
+{
+  "titulo": "SpecFlow — Reagendamento Rápido de Consultas de Emergência / Cancelamentos",
+  "problema": "Uma clínica possui uma fila de espera, mas continua perdendo horários quando pacientes cancelam consultas em cima da hora. A equipe entra em contato manualmente com várias pessoas e nem sempre consegue preencher a vaga.",
+  "hipotese": "Se identificarmos cancelamentos em tempo real e notificarmos automaticamente os pacientes elegíveis na fila de espera com confirmação rápida, reduziremos em pelo menos 80% a ociosidade das agendas médicas sem sobrecarregar a recepção.",
+  "escopoIncluido": [
+    "Registro automático ou simplificado de cancelamento de consulta pela recepção ou paciente",
+    "Filtro e ordenação de pacientes elegíveis da fila de espera com base em especialidade e horário disponível",
+    "Notificação rápida e canal de confirmação do novo horário para a pessoa da fila",
+    "Registro do paciente que aceitou a vaga e atualização imediata da agenda da clínica"
+  ],
+  "escopoExcluido": [
+    "Integração avançada com múltiplos gateways de pagamento ou cobrança de taxa de cancelamento",
+    "Algoritmos de inteligência preditiva para cálculo de probabilidade de no-show em tempo real no MVP",
+    "Aplicativo nativo iOS/Android dedicado exclusivamente para pacientes"
+  ],
+  "historiasUsuario": [
+    {
+      "id": "US-001",
+      "titulo": "Identificação e Registro de Cancelamento Recente",
+      "descricao": "Como recepcionista da clínica, quero registrar o cancelamento de uma consulta recebida em cima da hora, para que o sistema disponibilize o horário vago imediatamente para preenchimento.",
+      "trechoRastreabilidade": "Precisamos de uma forma simples de identificar o cancelamento",
+      "criteriosAceite": [
+        "Dado que um paciente liga ou envia mensagem cancelando, quando a recepcionista seleciona a consulta e clica em 'Marcar como Cancelada', o horário muda seu status para 'Disponível na Fila'.",
+        "O sistema registra o horário exato do cancelamento e a especialidade do médico."
+      ]
+    },
+    {
+      "id": "US-002",
+      "titulo": "Busca e Filtragem de Elegíveis na Fila de Espera",
+      "descricao": "Como recepcionista ou sistema automático, quero visualizar a lista de pacientes elegíveis da fila de espera ordenados por ordem de chegada/urgência, para selecionar quem contatar primeiro.",
+      "trechoRastreabilidade": "encontrar pessoas elegíveis na fila",
+      "criteriosAceite": [
+        "Dado que existe um horário vago por cancelamento, quando o sistema busca a fila de espera, apenas os pacientes cadastrados para a mesma especialidade e turno são exibidos.",
+        "Os pacientes são ordenados pela data e hora em que entraram na fila de espera."
+      ]
+    },
+    {
+      "id": "US-003",
+      "titulo": "Registro de Aceite e Ocupação do Horário",
+      "descricao": "Como recepcionista, quero registrar o aceite do novo paciente no horário vago, para que a vaga seja confirmada e o histórico de preenchimento seja gravado.",
+      "trechoRastreabilidade": "registrar quem aceitou o novo horário",
+      "criteriosAceite": [
+        "Dado que um paciente da fila aceitou a oferta de agendamento, quando o operador clica em 'Confirmar Aceite', a consulta é vinculada a este paciente.",
+        "O status do horário na agenda médica muda de 'Disponível na Fila' para 'Confirmado'."
+      ]
+    }
+  ],
+  "backlog": [
+    {
+      "item": "Tela de gestão de cancelamentos e liberação imediata de horários",
+      "prioridade": "Alta"
+    },
+    {
+      "item": "Módulo de busca e ordenação da fila de espera por especialidade e data de cadastro",
+      "prioridade": "Alta"
+    },
+    {
+      "item": "Fluxo de confirmação e vinculação do paciente elegível à nova vaga",
+      "prioridade": "Alta"
+    },
+    {
+      "item": "Histórico de horários recuperados x horários perdidos para a recepção",
+      "prioridade": "Média"
+    },
+    {
+      "item": "Disparo automático de SMS/WhatsApp para pacientes da fila",
+      "prioridade": "Baixa"
+    }
+  ],
+  "metricasSugeridas": [
+    "Taxa de Ocupação de Horários Cancelados (% de horários vagos que foram preenchidos pela fila)",
+    "Tempo Médio de Preenchimento (minutos decorridos entre o cancelamento e a confirmação do novo paciente)",
+    "Horas de trabalho manual reduzidas na recepção para preenchimento de vagas"
+  ],
+  "riscos": [
+    "Pacientes da fila não responderem a tempo antes do horário da consulta",
+    "Conflito de agendamento se a recepção tentar encaixar manualmente enquanto o sistema busca na fila",
+    "Dados de contato desatualizados dos pacientes na fila de espera"
+  ],
+  "duvidasEmAberto": [
+    "Qual o tempo limite padrão para um paciente da fila responder antes de o sistema passar para o próximo da lista?",
+    "A confirmação será feita manualmente pela recepção via telefone no MVP ou enviada por mensagem automática?",
+    "Existem critérios de prioridade médica na fila (ex: idosos ou gestantes) além da ordem de chegada?"
+  ]
+}
