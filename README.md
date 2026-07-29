@@ -5,7 +5,7 @@
 
 ---
 
-## 💡 Visão Geral
+## [Visão Geral]
 
 O **SpecFlow** foi desenvolvido para resolver a desconexão entre anotações não estruturadas de discovery e os entregáveis necessários para times de engenharia. A ferramenta analisa transcrições e anotações brutas para gerar:
 
@@ -17,18 +17,18 @@ O **SpecFlow** foi desenvolvido para resolver a desconexão entre anotações n�
 
 ---
 
-## 🛠️ Destaques de Engenharia & Resiliência
+## [Destaques de Engenharia & Resiliência]
 
-### 🤖 Geração Estruturada com IA & Validação Dupla
+### Geração Estruturada com IA & Validação Dupla
 A aplicação utiliza a biblioteca oficial `@google/genai` (v2.13) configurada com o modelo **`gemini-3.6-flash`**. A chamada envia um contrato JSON Schema nativo (`responseSchema`) e o resultado recebido passa por uma segunda camada de validação estrita no servidor com **Zod** (`ProductSpecificationSchema.safeParse()`).
 
-### 🛡️ Sistema Defensivo com Dual Fallback
+### Sistema Defensivo com Dual Fallback
 Para garantir disponibilidade ininterrupta durante falhas de rede, excedente de cota da API ou indisponibilidade do serviço:
 1. **Timeout Controller (20s):** Cancela requisições pendentes via `AbortController` / `Promise.race()`.
 2. **Fallback Automático:** Em caso de exceção ou timeout, o sistema carrega um modelo estático de cache validado pelo mesmo contrato Zod.
 3. **Fallback Manual:** Permite ao usuário carregar o modelo de demonstração offline via botão de atalho.
 
-### 🎨 Design System Modern-Minimal
+### Design System Modern-Minimal
 Construído com **Next.js 15 (App Router)**, **React 19**, **Tailwind CSS** e **Framer Motion**:
 - **Autenticação Split-Screen:** Interface inspirada nos padrões do Stripe e Vercel com exibição interativa do produto.
 - **Navegação Fluida:** Barra lateral minimizável, presets de discovery (Clínica, E-Commerce, Fintech, SaaS B2B) e histórico de sessão com realce do item ativo.
@@ -36,7 +36,7 @@ Construído com **Next.js 15 (App Router)**, **React 19**, **Tailwind CSS** e **
 
 ---
 
-## 📦 Stack Tecnológica
+## [Stack Tecnológica]
 
 | Camada | Tecnologia | Descrição |
 |---|---|---|
@@ -50,7 +50,7 @@ Construído com **Next.js 15 (App Router)**, **React 19**, **Tailwind CSS** e **
 
 ---
 
-## 🚀 Como Executar Localmente
+## [Execução Local]
 
 ### Pré-requisitos
 - Node.js 20+ ou 24+ instalado
@@ -80,7 +80,7 @@ Acesse a aplicação em `http://localhost:3000`.
 
 ---
 
-## 📁 Estrutura de Arquivos Principais
+## [Estrutura de Arquivos]
 
 ```
 SpecFlow/
@@ -108,7 +108,7 @@ SpecFlow/
 
 ---
 
-## 🏛️ Arquitetura de Validação & Fallback
+## [Arquitetura de Validação & Fallback]
 
 ```
 [ Entrada de Discovery ]
@@ -130,6 +130,6 @@ SpecFlow/
 
 ---
 
-## 📄 Licença
+## [Licença]
 
 Este projeto foi desenvolvido como um estúdio de engenharia de produto e demonstração técnica de integração resiliente com IA.
