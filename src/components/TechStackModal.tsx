@@ -62,24 +62,24 @@ export function TechStackModal({ isOpen, onClose }: TechStackModalProps) {
             </ul>
           </div>
 
-          {/* Card 2: Pipeline Generativo de IA */}
+          {/* Card 2: Pipeline Generativo de IA Multi-Provedor */}
           <div className="p-6 rounded-2xl bg-[#131211] border border-[#2e2a27] space-y-3 flex flex-col justify-start">
             <h3 className="font-bold text-sm sm:text-base text-[#ff4d00] flex items-center gap-2">
               <Workflow className="w-4 h-4 shrink-0 text-[#ff4d00]" />
-              <span>Pipeline Generativo de IA</span>
+              <span>Pipeline Generativo Multi-Provedor</span>
             </h3>
             <ul className="space-y-2.5 pl-4 list-disc text-[#ab9f96] leading-relaxed">
               <li>
-                <strong className="text-[#f5f3f0]">SDK oficial Google Gen AI (<code className="text-[#ff4d00] bg-[#1c1a18] border border-[#2e2a27] px-1.5 py-0.5 rounded font-mono text-xs">@google/genai</code>):</strong> Integração assíncrona otimizada para o modelo <code className="text-[#ff4d00] bg-[#1c1a18] border border-[#2e2a27] px-1.5 py-0.5 rounded font-mono text-xs">gemini-3.6-flash</code>.
+                <strong className="text-[#f5f3f0]">Google Gen AI SDK (<code className="text-[#ff4d00] bg-[#1c1a18] border border-[#2e2a27] px-1.5 py-0.5 rounded font-mono text-xs">@google/genai</code>):</strong> Conexão direta com modelo <code className="text-[#ff4d00] bg-[#1c1a18] border border-[#2e2a27] px-1.5 py-0.5 rounded font-mono text-xs">gemini-3.6-flash</code> via Structured Outputs nativo.
               </li>
               <li>
-                <strong className="text-[#f5f3f0]">Structured Outputs Nativo:</strong> Mapeamento do contrato da especificação enviando <code className="text-[#ff4d00] bg-[#1c1a18] border border-[#2e2a27] px-1.5 py-0.5 rounded font-mono text-xs">responseSchema</code> em formato JSON Schema diretamente na chamada do modelo.
+                <strong className="text-[#f5f3f0]">API REST OpenRouter (Modelos Gratuitos):</strong> Suporte a modelos sem custo (<code className="text-[#ff4d00] bg-[#1c1a18] border border-[#2e2a27] px-1.5 py-0.5 rounded font-mono text-xs">gemini-2.0-flash-exp:free</code>, <code className="text-[#ff4d00] bg-[#1c1a18] border border-[#2e2a27] px-1.5 py-0.5 rounded font-mono text-xs">llama-3.3-70b:free</code>) com <code className="text-[#ff4d00] bg-[#1c1a18] border border-[#2e2a27] px-1.5 py-0.5 rounded font-mono text-xs">OPENROUTER_API_KEY</code>.
               </li>
               <li>
-                <strong className="text-[#f5f3f0]">Prompting Orientado a Domínio:</strong> Instrução de sistema determinística que proíbe invenção de regras não presentes no discovery de entrada.
+                <strong className="text-[#f5f3f0]">Seletor Dinâmico na UI:</strong> Alternância instantânea no formulário de entrada entre Google Gemini e OpenRouter.
               </li>
               <li>
-                <strong className="text-[#f5f3f0]">Configuração de Decodificação:</strong> Baixa variância criativa (<code className="text-[#ff4d00] bg-[#1c1a18] border border-[#2e2a27] px-1.5 py-0.5 rounded font-mono text-xs">temperature: 0.2</code>) para manter coerência técnica e sintaxe válida.
+                <strong className="text-[#f5f3f0]">Configuração de Decodificação:</strong> Baixa variância criativa (<code className="text-[#ff4d00] bg-[#1c1a18] border border-[#2e2a27] px-1.5 py-0.5 rounded font-mono text-xs">temperature: 0.2</code>) para garantir estrutura JSON válida.
               </li>
             </ul>
           </div>
@@ -88,23 +88,24 @@ export function TechStackModal({ isOpen, onClose }: TechStackModalProps) {
           <div className="p-6 rounded-2xl bg-[#131211] border border-[#2e2a27] space-y-3 flex flex-col justify-start">
             <h3 className="font-bold text-sm sm:text-base text-emerald-400 flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 shrink-0 text-emerald-400" />
-              <span>Resiliência & Validação Defensiva</span>
+              <span>Resiliência & Fallback Multi-Nível</span>
             </h3>
             <ul className="space-y-2.5 pl-4 list-disc text-[#ab9f96] leading-relaxed">
               <li>
-                <strong className="text-[#f5f3f0]">Validação Dupla (IA + Schema Zod):</strong> Orienta a IA no provedor e re-valida o JSON recebido no servidor via <code className="text-[#ff4d00] bg-[#1c1a18] border border-[#2e2a27] px-1.5 py-0.5 rounded font-mono text-xs">ProductSpecificationSchema.safeParse()</code>.
+                <strong className="text-[#f5f3f0]">Redirecionamento Automático:</strong> Se o OpenRouter falhar (sem chave ou erro de cota), o sistema aciona transparentemente o Gemini Direto.
               </li>
               <li>
-                <strong className="text-[#f5f3f0]">Timeout Controller (20s):</strong> Disparo concorrente via <code className="text-[#ff4d00] bg-[#1c1a18] border border-[#2e2a27] px-1.5 py-0.5 rounded font-mono text-xs">Promise.race()</code> que aborta requisições travadas, prevenindo pendências na UI.
+                <strong className="text-[#f5f3f0]">Validação Dupla (IA + Schema Zod):</strong> Validação sintática no provedor e verificação rigorosa no servidor via <code className="text-[#ff4d00] bg-[#1c1a18] border border-[#2e2a27] px-1.5 py-0.5 rounded font-mono text-xs">ProductSpecificationSchema.safeParse()</code>.
               </li>
               <li>
-                <strong className="text-[#f5f3f0]">Isomorfismo de Contrato no Fallback:</strong> Retorna uma especificação estática em caso de falha de rede/cota com o mesmo contrato Zod exigido pela UI.
+                <strong className="text-[#f5f3f0]">Timeout Controller (20s):</strong> Disparo via <code className="text-[#ff4d00] bg-[#1c1a18] border border-[#2e2a27] px-1.5 py-0.5 rounded font-mono text-xs">Promise.race()</code> para evitar travamento da UI em requisições lentas.
               </li>
               <li>
-                <strong className="text-[#f5f3f0]">Telemetria & Metadados de Resposta:</strong> Retorno de diagnósticos contendo <code className="text-[#ff4d00] bg-[#1c1a18] border border-[#2e2a27] px-1.5 py-0.5 rounded font-mono text-xs">source: "live" | "fallback"</code>, duração em milissegundos e timestamp.
+                <strong className="text-[#f5f3f0]">Fallback Estático Garantido:</strong> Se todos os provedores falharem, o cache local isolado fornece dados em contrato Zod equivalente.
               </li>
             </ul>
           </div>
+
 
           {/* Card 4: UX System & Rastreabilidade */}
           <div className="p-6 rounded-2xl bg-[#131211] border border-[#2e2a27] space-y-3 flex flex-col justify-start">

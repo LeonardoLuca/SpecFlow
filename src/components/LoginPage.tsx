@@ -67,12 +67,8 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               <span className="w-1.5 h-1.5 rounded-full bg-[#ff4d00]" />
             </span>
           </div>
-
-          <span className="text-[11px] font-mono px-3 py-1 rounded-full bg-[#1c1a18]/90 text-[#ff4d00] border border-[#ff4d00]/40 font-semibold flex items-center gap-1.5 shadow-sm">
-            <Zap className="w-3.5 h-3.5 text-[#ff4d00]" />
-            Elite Craft. Radical Speed.
-          </span>
         </div>
+
 
         {/* Dynamic Interactive Showcase Cards */}
         <div className="my-auto py-8">

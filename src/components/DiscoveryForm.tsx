@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Workflow, FileText, Loader2, PlayCircle, RotateCcw } from "lucide-react";
+import { Workflow, FileText, Loader2, PlayCircle, RotateCcw, Sparkles, Globe, ChevronDown } from "lucide-react";
+import { ProviderOption } from "@/types/spec";
 
 interface DiscoveryFormProps {
-  onGenerate: (input: string) => Promise<void>;
+  onGenerate: (input: string, provider: ProviderOption) => Promise<void>;
   onLoadFallbackManual: () => void;
   isLoading: boolean;
   initialText?: string;
@@ -20,6 +21,7 @@ export function DiscoveryForm({
   onClearInput,
 }: DiscoveryFormProps) {
   const [input, setInput] = useState(initialText);
+  const [provider, setProvider] = useState<ProviderOption>("gemini");
 
   useEffect(() => {
     if (initialText !== undefined) {
@@ -30,7 +32,7 @@ export function DiscoveryForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
-    await onGenerate(input);
+    await onGenerate(input, provider);
   };
 
   const handleClear = () => {
@@ -84,26 +86,56 @@ export function DiscoveryForm({
           </div>
         </div>
 
-        {/* Linha de Ações Inferior */}
-        <div className="flex items-center justify-between gap-3 pt-1">
-          <button
-            type="submit"
-            disabled={isLoading || !input.trim()}
-            className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-[#ff4d00] hover:bg-[#e04400] text-white text-sm font-semibold shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none transition-all flex items-center justify-center gap-2.5 group"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin text-white" />
-                <span>Processando com Gemini 3.6...</span>
-              </>
-            ) : (
-              <>
-                <Workflow className="w-4 h-4 text-white group-hover:rotate-12 transition-transform" />
-                <span>Gerar Especificação de Produto</span>
-              </>
-            )}
-          </button>
+        {/* Linha de Ações Inferior com Seletor de Provedor de IA */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
+          <div className="flex items-center gap-2 flex-1 max-w-full sm:max-w-xl">
+            {/* Botão de Submissão */}
+            <button
+              type="submit"
+              disabled={isLoading || !input.trim()}
+              className="flex-1 px-6 sm:px-8 py-3.5 rounded-2xl bg-[#ff4d00] hover:bg-[#e04400] text-white text-sm font-semibold shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none transition-all flex items-center justify-center gap-2.5 group"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-white" />
+                  <span>
+                    {provider === "openrouter" ? "Processando com OpenRouter..." : "Processando com Gemini..."}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Workflow className="w-4 h-4 text-white group-hover:rotate-12 transition-transform" />
+                  <span>Gerar Especificação de Produto</span>
+                </>
+              )}
+            </button>
 
+            {/* Seletor de Provedor / Modelo */}
+            <div className="relative shrink-0">
+              <select
+                value={provider}
+                onChange={(e) => setProvider(e.target.value as ProviderOption)}
+                disabled={isLoading}
+                className="appearance-none bg-[#131211] hover:bg-[#262320] text-[#f5f3f0] text-xs font-medium pl-9 pr-8 py-3.5 rounded-2xl border border-[#2e2a27] focus:outline-none focus:ring-2 focus:ring-[#ff4d00]/50 transition-all cursor-pointer shadow-sm"
+                title="Selecionar Provedor de IA"
+              >
+                <option value="gemini">Google Gemini 3.6 Flash</option>
+                <option value="openrouter">OpenRouter (Modelos Gratuitos)</option>
+              </select>
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#ff4d00]">
+                {provider === "gemini" ? (
+                  <Sparkles className="w-4 h-4 text-[#ff4d00]" />
+                ) : (
+                  <Globe className="w-4 h-4 text-emerald-400" />
+                )}
+              </div>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#ab9f96]">
+                <ChevronDown className="w-3.5 h-3.5" />
+              </div>
+            </div>
+          </div>
+
+          {/* Botão Fallback Manual */}
           <button
             type="button"
             onClick={onLoadFallbackManual}
@@ -118,5 +150,3 @@ export function DiscoveryForm({
     </motion.div>
   );
 }
-
-

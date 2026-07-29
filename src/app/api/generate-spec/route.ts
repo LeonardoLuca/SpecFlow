@@ -1,18 +1,19 @@
 import { NextResponse } from "next/server";
 import { getGeminiClient, SYSTEM_INSTRUCTION, GEMINI_RESPONSE_SCHEMA } from "@/lib/gemini";
-import { ProductSpecificationSchema, GenerateSpecResponse } from "@/types/spec";
+import { callOpenRouterSpec } from "@/lib/openrouter";
+import { ProductSpecificationSchema, GenerateSpecResponse, ProviderOption } from "@/types/spec";
 import fallbackSpecRaw from "@/data/fallback-spec.json";
 
 const TIMEOUT_MS = 20000; // 20 segundos
 
-// Lista de modelos suportados em ordem de preferência
-const CANDIDATE_MODELS = ["gemini-3.6-flash", "gemini-flash-latest"];
+// Lista de modelos Gemini suportados em ordem de preferência
+const CANDIDATE_GEMINI_MODELS = ["gemini-3.6-flash", "gemini-flash-latest"];
 
 export async function POST(request: Request) {
   const startTime = Date.now();
   const generatedAt = new Date().toISOString();
 
-  let body: { input?: string } = {};
+  let body: { input?: string; provider?: ProviderOption } = {};
   try {
     body = await request.json();
   } catch {
@@ -23,6 +24,8 @@ export async function POST(request: Request) {
   }
 
   const userInput = body.input?.trim();
+  const requestedProvider = body.provider || "gemini";
+
   if (!userInput) {
     return NextResponse.json(
       { error: "O campo 'input' é obrigatório para gerar a especificação." },
@@ -30,14 +33,59 @@ export async function POST(request: Request) {
     );
   }
 
-  // Tentar chamada real com os modelos ativos (gemini-3.6-flash / gemini-flash-latest)
+  // 1. Executar isoladamente se o provedor OpenRouter for selecionado
+  if (requestedProvider === "openrouter") {
+    try {
+      const openRouterResult = await callOpenRouterSpec(userInput);
+      const parsedJson = JSON.parse(openRouterResult.text);
+      const zodResult = ProductSpecificationSchema.safeParse(parsedJson);
+
+      if (!zodResult.success) {
+        console.warn("[SpecFlow OpenRouter Zod Warning]", zodResult.error.format());
+        throw new Error("A resposta do OpenRouter não atendeu ao Schema Zod esperado.");
+      }
+
+
+      const durationMs = Date.now() - startTime;
+      const liveResponse: GenerateSpecResponse = {
+        source: "live",
+        specification: zodResult.data,
+        metadata: {
+          provider: "OpenRouter (Free)",
+          model: openRouterResult.model,
+          durationMs,
+          generatedAt,
+        },
+      };
+      return NextResponse.json(liveResponse);
+
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.warn(`[SpecFlow OpenRouter Activator] OpenRouter falhou: ${msg}. Carregando fallback estático direto...`);
+
+      const parsedFallback = ProductSpecificationSchema.parse(fallbackSpecRaw);
+      const fallbackResponse: GenerateSpecResponse = {
+        source: "fallback",
+        specification: parsedFallback,
+        metadata: {
+          provider: "OpenRouter (Free) / Cache Estático",
+          generatedAt,
+          fallbackReason: `OpenRouter: ${msg}`,
+        },
+      };
+
+      return NextResponse.json(fallbackResponse);
+    }
+  }
+
+  // 2. Executar isoladamente se o provedor Gemini for selecionado
   try {
     const ai = getGeminiClient();
 
     let lastError: Error | null = null;
     let successfulResult: { text: string; usedModel: string } | null = null;
 
-    for (const modelName of CANDIDATE_MODELS) {
+    for (const modelName of CANDIDATE_GEMINI_MODELS) {
       try {
         const timeoutPromise = new Promise<never>((_, reject) => {
           setTimeout(
@@ -90,6 +138,7 @@ export async function POST(request: Request) {
       source: "live",
       specification: zodResult.data,
       metadata: {
+        provider: "Google Gemini",
         model: successfulResult.usedModel,
         durationMs,
         generatedAt,
@@ -100,7 +149,7 @@ export async function POST(request: Request) {
 
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "Erro desconhecido durante a geração";
-    console.log(`[SpecFlow Fallback Activator] Acionando fallback devido a: ${errorMessage}`);
+    console.log(`[SpecFlow Fallback Activator] Acionando fallback estático devido a: ${errorMessage}`);
 
     // Validação do Fallback estático contra Zod para garantir contrato idêntico
     const parsedFallback = ProductSpecificationSchema.parse(fallbackSpecRaw);
@@ -109,6 +158,7 @@ export async function POST(request: Request) {
       source: "fallback",
       specification: parsedFallback,
       metadata: {
+        provider: "Google Gemini / Cache Estático",
         generatedAt,
         fallbackReason: errorMessage,
       },

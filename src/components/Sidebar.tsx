@@ -72,10 +72,11 @@ export function Sidebar({
       </AnimatePresence>
 
       <aside
-        className={`fixed lg:static top-0 left-0 z-40 h-screen bg-[#131211] border-r border-[#2e2a27] flex flex-col justify-between transition-all duration-300 ${
+        className={`fixed lg:sticky top-0 left-0 z-40 h-screen bg-[#131211] border-r border-[#2e2a27] flex flex-col justify-between transition-all duration-300 ${
           isOpen ? "w-72" : "w-0"
         } overflow-hidden shrink-0`}
       >
+
         <div className="flex flex-col h-full w-72">
           {/* Header da Sidebar */}
           <div className="h-16 px-4 border-b border-[#2e2a27] flex items-center justify-between shrink-0">

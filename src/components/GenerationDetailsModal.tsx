@@ -48,19 +48,30 @@ export function GenerationDetailsModal({
                   : "bg-amber-950/80 text-amber-300 border border-amber-800/80"
               }`}
             >
-              {source === "live" ? "Gemini Real (Live)" : "Fallback Local"}
+              {source === "live" ? "IA Conectada (Live)" : "Fallback Local"}
             </span>
           </div>
+
+          {metadata.provider && (
+            <div className="flex items-center justify-between p-3 rounded-xl bg-[#131211] border border-[#2e2a27]">
+              <span className="text-[#ab9f96] flex items-center gap-2">
+                <Terminal className="w-4 h-4 text-[#ff4d00]" />
+                Provedor de IA:
+              </span>
+              <span className="font-semibold text-[#f5f3f0]">{metadata.provider}</span>
+            </div>
+          )}
 
           {metadata.model && (
             <div className="flex items-center justify-between p-3 rounded-xl bg-[#131211] border border-[#2e2a27]">
               <span className="text-[#ab9f96] flex items-center gap-2">
                 <Cpu className="w-4 h-4 text-[#ff4d00]" />
-                Modelo de IA:
+                Modelo Utilizado:
               </span>
               <span className="font-mono text-[#f5f3f0]">{metadata.model}</span>
             </div>
           )}
+
 
           {metadata.durationMs !== undefined && (
             <div className="flex items-center justify-between p-3 rounded-xl bg-[#131211] border border-[#2e2a27]">

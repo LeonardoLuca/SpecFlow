@@ -9,7 +9,8 @@ import { SpecificationTabs } from "@/components/SpecificationTabs";
 import { LoginPage } from "@/components/LoginPage";
 import { TechStackModal } from "@/components/TechStackModal";
 import { InteractiveBackground } from "@/components/InteractiveBackground";
-import { GenerateSpecResponse, ProductSpecificationSchema } from "@/types/spec";
+import { GenerationStepsLoader } from "@/components/GenerationStepsLoader";
+import { GenerateSpecResponse, ProductSpecificationSchema, ProviderOption } from "@/types/spec";
 import { DiscoveryPreset } from "@/data/discovery-presets";
 import fallbackSpecRaw from "@/data/fallback-spec.json";
 
@@ -19,6 +20,7 @@ export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isTechStackOpen, setIsTechStackOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentProvider, setCurrentProvider] = useState<ProviderOption>("gemini");
   const [currentSpec, setCurrentSpec] = useState<GenerateSpecResponse | null>(null);
   const [activeSpecId, setActiveSpecId] = useState<string | null>(null);
   const [inputText, setInputText] = useState("");
@@ -29,8 +31,11 @@ export default function Home() {
     return <LoginPage onLogin={(userData) => setUser(userData)} />;
   }
 
-  const handleGenerate = async (input: string) => {
+  const handleGenerate = async (input: string, provider: ProviderOption = "gemini") => {
     setIsLoading(true);
+    setCurrentProvider(provider);
+    setCurrentSpec(null);
+    setActiveSpecId(null);
 
     try {
       const response = await fetch("/api/generate-spec", {
@@ -38,7 +43,7 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ input }),
+        body: JSON.stringify({ input, provider }),
       });
 
       if (!response.ok) {
@@ -77,6 +82,9 @@ export default function Home() {
   };
 
   const handleLoadFallbackManual = () => {
+    setCurrentSpec(null);
+    setActiveSpecId(null);
+
     const fallbackSpec = ProductSpecificationSchema.parse(fallbackSpecRaw);
     const specId = `spec-${Date.now()}`;
     const fallbackData: GenerateSpecResponse = {
@@ -120,7 +128,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#131211] text-[#f5f3f0] font-sans overflow-x-hidden relative">
+    <div className="h-screen w-screen flex bg-[#131211] text-[#f5f3f0] font-sans overflow-hidden relative">
       <InteractiveBackground subtle />
 
       <Sidebar
@@ -136,36 +144,39 @@ export default function Home() {
         onToggleOpen={() => setSidebarOpen(!sidebarOpen)}
       />
 
-      <div className="flex-1 flex flex-col min-w-0 bg-[#131211]/50 backdrop-blur-[1px] min-h-screen relative z-10">
-
+      <div className="flex-1 flex flex-col min-w-0 bg-[#131211]/50 backdrop-blur-[1px] h-screen overflow-hidden relative z-10">
         <Header
           onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
           onOpenTechStack={() => setIsTechStackOpen(true)}
           userName={user.name}
         />
 
-        <main className="flex-1 max-w-[1400px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-          <DiscoveryForm
-            onGenerate={handleGenerate}
-            onLoadFallbackManual={handleLoadFallbackManual}
-            isLoading={isLoading}
-            initialText={inputText}
-            onClearInput={() => setInputText("")}
-          />
-
-          {currentSpec && currentSpec.source === "fallback" && (
-            <FallbackAlert
-              reason={currentSpec.metadata.fallbackReason}
-              isManual={currentSpec.metadata.fallbackReason?.includes("manual")}
+        <main className="flex-1 overflow-y-auto w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6 scrollbar-thin scrollbar-thumb-[#2e2a27]">
+          <div className="max-w-[1400px] w-full mx-auto space-y-6">
+            <DiscoveryForm
+              onGenerate={handleGenerate}
+              onLoadFallbackManual={handleLoadFallbackManual}
+              isLoading={isLoading}
+              initialText={inputText}
+              onClearInput={() => setInputText("")}
             />
-          )}
 
-          {currentSpec && <SpecificationTabs data={currentSpec} />}
+            {isLoading && <GenerationStepsLoader provider={currentProvider} />}
+
+            {currentSpec && currentSpec.source === "fallback" && (
+              <FallbackAlert
+                reason={currentSpec.metadata.fallbackReason}
+                isManual={currentSpec.metadata.fallbackReason?.includes("manual")}
+              />
+            )}
+
+            {currentSpec && <SpecificationTabs data={currentSpec} />}
+          </div>
+
+          <footer className="border-t border-[#2e2a27] py-6 text-center text-xs text-[#ab9f96] mt-12 font-mono">
+            SpecFlow &copy; {new Date().getFullYear()} &mdash; Studio Inteligente de Especificação de Produto
+          </footer>
         </main>
-
-        <footer className="border-t border-[#2e2a27] py-6 text-center text-xs text-[#ab9f96] mt-auto font-mono">
-          SpecFlow &copy; {new Date().getFullYear()} &mdash; Studio Inteligente de Especificação de Produto
-        </footer>
       </div>
 
       <TechStackModal
@@ -174,6 +185,7 @@ export default function Home() {
       />
     </div>
   );
+
 }
 
 

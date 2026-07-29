@@ -31,15 +31,18 @@ export type BacklogItem = z.infer<typeof BacklogItemSchema>;
 export type ProductSpecification = z.infer<typeof ProductSpecificationSchema>;
 
 export type GenerationSource = "live" | "fallback";
+export type ProviderOption = "gemini" | "openrouter";
 
 export interface GenerateSpecResponse {
   id?: string;
   source: GenerationSource;
   specification: ProductSpecification;
   metadata: {
+    provider?: string;
     model?: string;
     durationMs?: number;
     generatedAt: string;
     fallbackReason?: string;
   };
 }
+
