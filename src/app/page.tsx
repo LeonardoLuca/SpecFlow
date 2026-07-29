@@ -151,8 +151,8 @@ export default function Home() {
           userName={user.name}
         />
 
-        <main className="flex-1 overflow-y-auto w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6 scrollbar-thin scrollbar-thumb-[#2e2a27]">
-          <div className="max-w-[1400px] w-full mx-auto space-y-6">
+        <main className="flex-1 flex flex-col justify-between overflow-y-auto w-full px-4 sm:px-6 lg:px-8 py-6 scrollbar-thin scrollbar-thumb-[#2e2a27]">
+          <div className="max-w-[1400px] w-full mx-auto space-y-6 pb-8">
             <DiscoveryForm
               onGenerate={handleGenerate}
               onLoadFallbackManual={handleLoadFallbackManual}
@@ -173,10 +173,11 @@ export default function Home() {
             {currentSpec && <SpecificationTabs data={currentSpec} />}
           </div>
 
-          <footer className="border-t border-[#2e2a27] py-6 text-center text-xs text-[#ab9f96] mt-12 font-mono">
+          <footer className="max-w-[1400px] w-full mx-auto border-t border-[#2e2a27] py-6 text-center text-xs text-[#ab9f96] mt-auto shrink-0 font-mono">
             SpecFlow &copy; {new Date().getFullYear()} &mdash; Studio Inteligente de Especificação de Produto
           </footer>
         </main>
+
       </div>
 
       <TechStackModal
