@@ -72,6 +72,9 @@ export function LoginPage({ onLogin }: LoginPageProps) {
 
         {/* Dynamic Interactive Showcase Cards */}
         <div className="my-auto py-8">
+          <p className="mb-6 max-w-xl text-sm leading-relaxed text-[#ab9f96] sm:text-base">
+            Um estúdio de produto com IA que transforma descobertas brutas em especificações claras, rastreáveis e prontas para execução.
+          </p>
           <ProductShowcaseCards />
         </div>
 
