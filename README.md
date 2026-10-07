@@ -21,7 +21,7 @@ O **SpecFlow** foi desenvolvido para resolver a desconexão entre anotações n�
 
 ### 1. Geração Estruturada Multi-Provedor com IA & Validação Dupla
 A aplicação suporta múltiplos provedores generativos alternáveis diretamente na interface:
-1. **Google Gemini Direto:** Integração oficial com `@google/genai` (v2.13) usando o modelo **`gemini-3.6-flash`** com `responseSchema` nativo.
+1. **Google Gemini Direto:** Integração oficial com `@google/genai` (v2.13) com cascata de modelos (`gemini-3.6-flash` → `gemini-3.5-flash-lite` → `gemini-3.1-flash-lite`) e `responseSchema` nativo.
 2. **OpenRouter (Modelos Gratuitos):** Integração REST v1 com suporte a modelos sem custo (ex: `google/gemini-2.0-flash-exp:free`, `meta-llama/llama-3.3-70b-instruct:free`).
 
 Todos os retornos de ambos os provedores passam por uma segunda camada de validação estrita no servidor com **Zod** (`ProductSpecificationSchema.safeParse()`).
@@ -50,8 +50,8 @@ Interface escura no tom **Warm Graphite & Signal Orange** com efeito espacial re
 
 ### 6. Sistema Defensivo com Multi-Level Fallback
 Para garantir disponibilidade ininterrupta durante falhas de rede, excedente de cota da API ou ausência de chave:
-1. **Redirecionamento Automático:** Se a chamada via OpenRouter falhar ou não possuir chave, o servidor tenta transparentemente o Gemini Direto.
-2. **Timeout Controller (20s):** Cancela requisições pendentes via `Promise.race()`.
+1. **Cascata de Modelos:** dentro de cada provedor, se um modelo falhar, o próximo da lista é tentado (3 no Gemini, 7 no OpenRouter).
+2. **Timeout por modelo (60s no Gemini):** abandona o modelo que não responde via `Promise.race()`; a rota usa `maxDuration = 300`.
 3. **Fallback Estático:** Em caso de falha de todos os provedores ao vivo, a aplicação serve um modelo estático em cache isolado com o mesmo contrato Zod.
 4. **Fallback Manual:** Permite ao usuário carregar o modelo de demonstração offline via botão de atalho.
 
@@ -63,7 +63,7 @@ Para garantir disponibilidade ininterrupta durante falhas de rede, excedente de 
 |---|---|---|
 | **Framework** | Next.js 15.1 (App Router) | React Server Components & Route Handlers |
 | **Linguagem** | TypeScript 5.7 | Tipagem estrita de ponta a ponta sem suppressões |
-| **Estilização** | Tailwind CSS v4 & Lucide Icons | Design System dark mode no tom Warm Graphite & Signal Orange |
+| **Estilização** | Tailwind CSS 3 & Lucide Icons | Design System dark mode no tom Warm Graphite & Signal Orange |
 | **Animações** | Framer Motion | Malha topográfica a 60fps via `useMotionTemplate` |
 | **IA / LLM** | Google Gen AI & OpenRouter API | Chamadas assíncronas ao Gemini 3.6 Flash e modelos grátis OpenRouter |
 | **Harness Engine** | TypeScript & Evals | Verificador de Grounding e Suíte de Avaliação de Qualidade |
