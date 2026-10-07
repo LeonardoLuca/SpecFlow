@@ -10,10 +10,8 @@ import {
   ShieldCheck,
   Gauge,
   MessageSquareQuote,
-  ArrowRight,
   Lightbulb,
   AlertTriangle,
-  Rocket,
 } from "lucide-react";
 
 interface TechStackModalProps {
@@ -209,7 +207,7 @@ function DecisionsTab() {
       <p className="text-[#ab9f96] leading-relaxed">
         Cada decisão abaixo segue o mesmo roteiro: <strong className="text-[#f5f3f0]">o que</strong> foi escolhido,{" "}
         <strong className="text-emerald-400">por quê</strong> e <strong className="text-amber-400">o que se perde</strong> com
-        isso. É a estrutura mais fácil de defender numa conversa técnica.
+        isso. 
       </p>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Decision
@@ -274,7 +272,7 @@ function DecisionsTab() {
             </>
           }
           why="Mantém o MVP sem custo e sem infraestrutura, focado no que é o diferencial: geração estruturada e verificada."
-          tradeoff="O histórico some ao recarregar a página e não há autenticação real. É uma limitação consciente, listada na aba Entrevista."
+          tradeoff="O histórico some ao recarregar a página e o login é uma simulação de interface, sem autenticação real."
         />
         <Decision
           title="UI: Tailwind CSS 3 + Framer Motion"
@@ -428,7 +426,7 @@ function ResilienceTab() {
           />
         </Section>
 
-        <Section icon={AlertTriangle} title="Comportamento a conhecer (honestidade técnica)">
+        <Section icon={AlertTriangle} title="Considerações de projeto">
           <Bullets
             items={[
               "Os provedores são independentes: se o OpenRouter esgotar a cascata, o sistema vai direto ao cache estático, sem tentar o Gemini.",
@@ -492,7 +490,7 @@ function QualityTab() {
         </Section>
       </div>
 
-      <Section icon={AlertTriangle} title="Limitações conhecidas do harness">
+      <Section icon={AlertTriangle} title="Limites do harness">
         <Bullets
           items={[
             "A checagem de citação aceita também uma correspondência frouxa (80% das palavras longas presentes). Isso reduz falsos negativos, mas pode aprovar um trecho levemente alterado.",
@@ -508,87 +506,14 @@ function QualityTab() {
   );
 }
 
-function InterviewTab() {
-  const qa: { q: string; a: React.ReactNode }[] = [
-    {
-      q: "Por que validar a saída da IA se o Gemini já aceita um schema?",
-      a: "O schema nativo reduz erros, mas não os elimina, e o OpenRouter nem o tem. O Zod garante o mesmo contrato para qualquer provedor e protege o restante do código, que passa a receber só dados já validados.",
-    },
-    {
-      q: "O que acontece se a IA falhar durante uma demonstração?",
-      a: "Há quatro camadas: troca de modelo, limite de tempo, validação do contrato e, por fim, um fallback estático com o mesmo contrato. A interface sinaliza o modo Cache para não enganar o usuário.",
-    },
-    {
-      q: "Como você sabe que a IA não inventou requisitos?",
-      a: "Exijo uma citação literal por história e verifico por código que o trecho existe no texto original. É uma garantia de origem, não de qualidade, e essa diferença está documentada nas limitações.",
-    },
-    {
-      q: "Por que a ordem dos modelos do Gemini é essa?",
-      a: "Foi observado em produção: o modelo principal tem 20 requisições por dia no plano gratuito e retornou 503 por sobrecarga. Os modelos Lite, mais estáveis e com 500 por dia, entram como reserva.",
-    },
-    {
-      q: "Como isso escalaria para muitos usuários?",
-      a: "Hoje a requisição é síncrona e a rota é pública. Para escalar, eu moveria a geração para uma fila com streaming do progresso, adicionaria limite de requisições por usuário e persistiria o histórico.",
-    },
-  ];
-
-  return (
-    <div className="space-y-4">
-      <Section icon={MessageSquareQuote} title="Perguntas prováveis e respostas curtas">
-        <div className="space-y-4">
-          {qa.map((item) => (
-            <div key={item.q} className="space-y-1">
-              <p className="text-[#f5f3f0] font-semibold flex items-start gap-2">
-                <ArrowRight className="w-4 h-4 text-[#ff4d00] shrink-0 mt-0.5" />
-                {item.q}
-              </p>
-              <p className="pl-6">{item.a}</p>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Section icon={AlertTriangle} title="Limitações assumidas do MVP">
-          <Bullets
-            items={[
-              "Login simulado na interface e histórico só em memória (perdido ao recarregar).",
-              "A rota de geração é pública e sem limite de uso: qualquer pessoa pode consumir a cota gratuita.",
-              <>
-                O loader de 5 etapas é cronometrado na interface: ilustra o pipeline, mas <strong>não</strong> reflete o
-                progresso real do servidor.
-              </>,
-              "Não há testes automatizados; a validação hoje é o contrato Zod e o harness em tempo de execução.",
-              "Contrato duplicado entre o schema do SDK do Gemini e o schema Zod.",
-            ]}
-          />
-        </Section>
-
-        <Section icon={Rocket} title="Próximos passos que eu priorizaria">
-          <Bullets
-            items={[
-              "Streaming (SSE) para que as etapas do loader reflitam o progresso real.",
-              "Laço de autocorreção: reenviar ao modelo as citações reprovadas, ligando o selfCorrectionAttempts.",
-              "Limite de requisições por IP ou usuário e autenticação real.",
-              "Persistência do histórico (por exemplo, Postgres) e testes automatizados para o harness e para o Zod.",
-              "Gerar o schema do Gemini a partir do Zod, para ter uma única fonte do contrato.",
-            ]}
-          />
-        </Section>
-      </div>
-    </div>
-  );
-}
-
 /* ---------- Modal ---------- */
 
 const TABS = [
   { id: "overview", label: "Visão geral", icon: Compass },
   { id: "decisions", label: "Decisões", icon: Scale },
   { id: "ai", label: "IA & contrato", icon: Sparkles },
-  { id: "resilience", label: "Resiliência", icon: ShieldCheck },
+  { id: "resilience", label: "Tolerância a falhas", icon: ShieldCheck },
   { id: "quality", label: "Qualidade", icon: Gauge },
-  { id: "interview", label: "Entrevista", icon: MessageSquareQuote },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -675,7 +600,6 @@ export function TechStackModal({ isOpen, onClose }: TechStackModalProps) {
           {activeTab === "ai" && <AiTab />}
           {activeTab === "resilience" && <ResilienceTab />}
           {activeTab === "quality" && <QualityTab />}
-          {activeTab === "interview" && <InterviewTab />}
         </div>
 
         {/* Rodapé */}
