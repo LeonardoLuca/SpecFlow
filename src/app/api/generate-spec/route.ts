@@ -5,7 +5,11 @@ import { ProductSpecificationSchema, GenerateSpecResponse, ProviderOption } from
 import { evaluateSpecification } from "@/lib/harness/eval-suite";
 import fallbackSpecRaw from "@/data/fallback-spec.json";
 
-const TIMEOUT_MS = 20000; // 20 segundos
+// Limite por modelo generoso: modelos com saída estruturada longa podem levar mais de 20s.
+const TIMEOUT_MS = 120000; // 120 segundos
+
+// Permite que a função serverless rode por até 5 minutos na Vercel (Fluid Compute).
+export const maxDuration = 300;
 
 // Lista de modelos Gemini suportados em ordem de preferência
 const CANDIDATE_GEMINI_MODELS = ["gemini-3.6-flash", "gemini-flash-latest"];
@@ -108,7 +112,7 @@ export async function POST(request: Request) {
       try {
         const timeoutPromise = new Promise<never>((_, reject) => {
           setTimeout(
-            () => reject(new Error(`Timeout de 20 segundos atingido para o modelo ${modelName}`)),
+            () => reject(new Error(`Timeout de 120 segundos atingido para o modelo ${modelName}`)),
             TIMEOUT_MS
           );
         });
